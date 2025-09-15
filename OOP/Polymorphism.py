@@ -12,4 +12,4 @@ class Child(Parent):
 c1 = Child()
 c1.display()
 
-#here same method name i.e display is acting differently for different class
+# here same method name i.e display is acting differently for different class
