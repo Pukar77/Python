@@ -1,0 +1,4 @@
+name = "Pukar"
+
+
+print("".join(reversed(name)))
