@@ -1,0 +1,9 @@
+name = "Pukar rimal"
+counter=0
+vowel=['a','e','i','o','u']
+for i in name:
+    if(i in vowel):
+        print(i)
+        counter+=1
+print(f"Number of voewl are {counter}")
+   
