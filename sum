@@ -1,0 +1,15 @@
+numbers = [2,3,4,5,6]
+result = 0
+for i in numbers:
+    result = result+i
+    
+print(result)
+
+
+total =sum(numbers)
+print(total)
+    
+    
+
+
+    
