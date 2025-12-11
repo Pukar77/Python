@@ -1,1 +1,67 @@
+1)This command is used to create a docker container if somebdy have already created a yml files
+docker compose up --build -d
+
+2)This command is used when we already have used the 1) command and want to rerun it. This command runs all the containers that is specified in the docker-compose.yml file
+docker compose up -d
+
+3)This command is used to stop the docker container
+docker compose down
+
+4)This commands shows the number of images of docker
+docker images
+
+5)This commmad shows the conatiner that is currently running
+docker ps
+
+6)This command shows all the container available
+docker ps -a
+
+7)This command is used to remove or destroy then docker image
+docker rmi Image_Name
+
+8)This command is used to remove or destroy the docker container
+docker rm Container_Name
+
+9)This command is used for port binding
+docker run -p8080:3306 Image_Name     (Where 8080 is the local machine port and 3306 is container port)
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+For DockerHub
+
+1)This command is used to pull the image from the dockerHUb
+docker pull IMAGE_NAME
+
+2The above command creates an image, but inorder to create containers, we run this command
+docker run IMAGE_NAME
+
+3)This command only runs the single container
+docker start conatiner_name
+
+4)This command only stops the single conatiner
+docker stop conatiner_name
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+TroubleShooting commands
+
+1)This command is used to access the logs of an particular conatiner
+docker log Conatiner_Name    (or Conatiner_ID)
+
+We can simply click on the conatiner name in docker desktop inorder to access its logs
+
+2) If we want to check any files or environment variables etc then this command is used
+docker exec -it conatiner_id/bin/bash     
+
+After running this command, we can write env to check envireonment file or any file
+
+
+
+
+
 
