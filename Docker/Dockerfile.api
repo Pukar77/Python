@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+ENV PYTHONPATH=/app
+
+# Install dependencies (base + development for debugging)
+COPY requirements/ /app/requirements/
+RUN pip install --no-cache-dir -r requirements/base.txt -r requirements/development.txt
+
+# Install Playwright browsers (needed by crawl4ai)
+RUN playwright install-deps chromium
+RUN playwright install chromium
+
+# Copy application code
+COPY ./src/ /app/src/
+COPY ./config/ /app/config/
+COPY ./scripts/ /app/scripts/
+
+# Expose port and run the API
+EXPOSE 8000
+CMD ["uvicorn", "src.services.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
