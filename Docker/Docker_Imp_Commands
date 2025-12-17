@@ -53,6 +53,9 @@ TroubleShooting commands
 1)This command is used to access the logs of an particular conatiner
 docker log Conatiner_Name    (or Conatiner_ID)
 
+2)If above log donot work, try this one
+docker-compose logs -f filename     -> docker-compose logs -f frontend
+
 We can simply click on the conatiner name in docker desktop inorder to access its logs
 
 2) If we want to check any files or environment variables etc then this command is used
