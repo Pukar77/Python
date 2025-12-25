@@ -1,0 +1,8 @@
+print("Second largest number")
+
+a = list(map(int,input("Enter the numbers").split()))
+print(a)
+
+a.sort()
+
+print("Second largest number is ", a[1])
