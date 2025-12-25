@@ -1,0 +1,16 @@
+print("Second largest number")
+
+z=[]
+
+a = int(input("Enter the number of element you want to insert"))
+
+i=1
+print(f"Enter {a} elements")
+for i in range(a):
+    b=int(input())
+    z.append(b)
+
+print(z)
+
+z.sort()
+print("Second largest number is ", z[1])
