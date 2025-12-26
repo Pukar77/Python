@@ -1,0 +1,9 @@
+CMD (Admin mode)
+(optional) docker system prune -a --volumes
+wsl --shutdown
+diskpart
+select vdisk file="C:\Users\Dell\AppData\Local\Docker\wsl\disk\docker_data.vhdx"
+attach vdisk readonly
+compact vdisk
+detach vdisk
+exit
