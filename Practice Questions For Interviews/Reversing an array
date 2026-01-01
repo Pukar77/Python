@@ -1,0 +1,11 @@
+print("Reversing an array")
+
+old_array = [1,2,3,4,5]
+
+print(old_array)
+
+new_array = []
+for i in range(1, len(old_array)+1):
+    new_array.append(old_array[-i])
+
+print(new_array)
