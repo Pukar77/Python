@@ -1,0 +1,26 @@
+print("Check if the array is sorted or not")
+
+old_array = [1,2,3,4,5]
+
+print(old_array)
+
+
+#Here we loop upto second last element because we are checking i+1. so our array size of 4, and at the last element it would have to check array[5] which donot exist so we loop upto second last element
+
+is_sorted = True
+
+for i in range(len(old_array)-1):
+    if(old_array[i]>old_array[i+1]):
+        is_sorted = False
+        break
+    
+if is_sorted:
+    print("Array is sorted")
+else:
+    print("Array is not sorted")
+    
+        
+
+      
+    
+
