@@ -1,0 +1,36 @@
+from fastapi import FastAPI, File, UploadFile
+import assemblyai as aai
+import tempfile
+
+app = FastAPI()
+
+aai.settings.api_key = "abc"
+
+@app.post('/speech2text')
+async def audio_creation(file : UploadFile=File(...)):
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as tmp:
+        tmp.write(await file.read())
+        tmp_path = tmp.name
+        
+
+    # audio_file = "./local_file.mp3"
+    # audio_file = "catch.wav"
+
+    config = aai.TranscriptionConfig(speech_models=["universal"])
+
+    transcript = aai.Transcriber(config=config).transcribe(tmp_path)
+
+    if transcript.status == "error":
+        raise RuntimeError(f"Transcription failed: {transcript.error}")
+
+    # print(transcript.text)
+    with open("Text.txt", "w", encoding='utf-8') as f:
+        f.write(transcript.text)
+        
+    return{
+        "text":transcript.text
+    }
+        
+    
+if __name__ == '__main__':
+    audio_creation()
