@@ -1,0 +1,18 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI(title="Echo Text API")
+
+# Request body schema
+class TextRequest(BaseModel):
+    user_input: str
+
+# Response body schema
+class TextResponse(BaseModel):
+    message: str
+
+@app.post("/echo", response_model=TextResponse)
+def echo_text(data: TextRequest):
+    return {
+        "message": f"User input is: {data.user_input}"
+    }
