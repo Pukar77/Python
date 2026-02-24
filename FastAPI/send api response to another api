@@ -1,0 +1,19 @@
+async def send_to_main_server(title:str, quizzes:list[dict]):
+    url = f"{TARGET_API_BASE}/current-affairs"
+    
+    payload = {
+        "title":title,
+        "quizzes":quizzes
+    }
+    
+    headers = {
+        "Authorization": f"Bearer {TARGET_API_SECRETE}",
+        "Content-Type": "application/json"
+    }
+    
+    async with httpx.AsyncClient(timeout=120) as client:
+        response = await client.post(url, json=payload, headers=headers)
+        
+    return {
+        "response": response.text
+    }
