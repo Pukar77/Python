@@ -1,0 +1,16 @@
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).resolve().parent.parent))
+
+#This upper code will take us to base folder. I used this because file not found error was coming
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from crawl_api_test import router as crawling_router
+from quiz_generation import router as quiz_router
+from schedular import start_scheduler
+from AI.quiz_generation import router as ai_quiz_router
+from AI.crawl import router as ai_crawl_router
+from zprs.crawl import router as zprs_crawl_router
+from zprs.quiz_generation import router as zprs_quiz_router
