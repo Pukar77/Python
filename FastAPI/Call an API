@@ -1,0 +1,32 @@
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+token = os.getenv("HF_TOKEN")
+print(token)
+
+
+API_URL = "https://router.huggingface.co/v1/chat/completions"
+headers = {
+    "Authorization": f"Bearer {token}",
+}
+
+payload= {
+    "messages": [
+        {
+            "role": "user",
+            "content": "What is the capital of France?"
+        }
+    ],
+    "model": "mistralai/Mistral-7B-Instruct-v0.2:featherless-ai"
+}
+
+response = requests.post(API_URL, headers=headers, json=payload)
+data = response.json()
+print(data["choices"][0]["message"])
+
+
+
+
