@@ -1,0 +1,11 @@
+print("Counting vowels in word")
+
+user_input = input("Enter the word to count the number of vowels\n")
+
+count = 0
+
+for i in user_input:
+    if i.lower() in "aeiou":
+        count = count + 1 
+        
+print(count)
