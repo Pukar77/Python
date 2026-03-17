@@ -1,0 +1,12 @@
+#Slicing_method
+
+print("Reversing an string")
+
+string = input("Enter string to be reversed")
+
+new_string = string[::-1]
+
+#here :: means from first to last and -1 means start from last
+
+
+print(new_string)
