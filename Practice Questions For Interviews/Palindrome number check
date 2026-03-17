@@ -1,0 +1,10 @@
+print("Checking whether the string is palindrome or not\n")
+
+user_input = input("Enter the word to check if the number is palindrome or not\n")
+
+reversed_input = user_input[::-1]
+
+if user_input == reversed_input:
+    print("The input is palindrome")
+else:
+    print("The input is not palindrome")
