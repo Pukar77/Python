@@ -1,4 +1,6 @@
 #Slicing_method
+#NOTE NOTE NOTE: I always get confused and use input.reverse() function, but IT WORK ONLY IN LIST, NOT IN STRING
+
 
 print("Reversing an string")
 
