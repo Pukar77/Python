@@ -1,0 +1,23 @@
+print("Maximum finding\n")
+
+print("Enter the number of the list \n")
+
+number = int(input())
+
+print("Enter the list\n")
+user_input = []
+for i in range(number):
+    list = int(input())
+    user_input.append(list)
+print(user_input)
+    
+maximum = user_input[0]
+
+for i in user_input:
+    if i > maximum:
+        maximum = i
+
+print(maximum)
+        
+    
+
