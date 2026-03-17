@@ -1,0 +1,19 @@
+print("Reversing an list\n")
+
+list_number = int(input(("Hey users, please enter the number of list you want\n")))
+
+print("Enter the list items")
+list = []
+for i in range(list_number):
+    numbers = int(input())
+    list.append(numbers)
+ 
+print(list)
+
+list.reverse()
+print(list)
+
+#Here we can also use slicing method 
+# new_list = list[::-1]
+# print(new_list)
+
