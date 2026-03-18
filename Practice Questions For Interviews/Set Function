@@ -1,0 +1,10 @@
+Set function removes all the dupliacte numbers in the list and print only unique value
+#Set in python
+
+list = [1,2,4,5,5,5,5,3]
+
+print(set(list))
+
+
+#Output
+{1, 2, 3, 4, 5}
