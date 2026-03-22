@@ -50,7 +50,7 @@ def get_credentials():
     return username, password
 
 
-def click_if_exists(page, selectors, wait_after=1500):
+def click_if_exists(page, selectors, wait_after=1500):   #this function is just used for some unwanted popups, we can skip this if we are trying to understand playwright automation
     for selector in selectors:
         try:
             locator = page.locator(selector)
