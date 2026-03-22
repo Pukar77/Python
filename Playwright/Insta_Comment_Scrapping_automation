@@ -1,0 +1,301 @@
+import os
+import json
+from dotenv import load_dotenv
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+
+load_dotenv()
+
+LOGIN_URL = "https://www.instagram.com/accounts/login/"
+PROFILE_URL = "https://www.instagram.com/babalwears/"
+
+PHOTO_SELECTOR = "div._aagw"
+COMMENT_SELECTOR = "span._ap3a._aaco._aacu._aacx._aad7._aade"
+LIKE_SELECTOR = (
+    "span.x1lliihq.x1plvlek.xryxfnj.x1n2onr6.xyejjpt.x15dsfln."
+    "x193iq5w.xeuugli.x1fj9vlw.x13faqbe.x1vvkbs.x1s928wv.xhkezso."
+    "x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x1i0vuye.xvs91rp.xo1l8bm."
+    "x5n08af.x10wh9bi.xpm28yp.x8viiok.x1o7cslx"
+)
+
+# --- Login form selectors (class-based) ---
+USERNAME_INPUT_SELECTOR = (
+    "input.x1i10hfl.xggy1nq.xtpw4lu.x1tutvks.x1s3xk63.x1s07b3s.x1a2a7pz"
+    ".xjbqb8w.x1v8p93f.x1o3jo1z.x16stqrj.xv5lvn5.x1ejq31n.x18oe1m7"
+    ".x1sy0etr.xstzfhl.x972fbf.x10w94by.x1qhh985.x14e42zd.x9f619"
+    ".xzsf02u.x1lliihq.x15h3p50.x10emqs4.x1vr9vpq.x1iyjqo2.x10d0gm4"
+    ".x1fhayk4.x16wdlz0.x3cjxhe.xe9ewy2.x11lt19s.xeuugli.xlyipyv"
+    ".x1hcrkkg.xfvqz1d.x12vv892.x1hu168l.xttzon8.x1sfh74k.x3fqe8q"
+    ".x185fvkj.x1p97g3g.xmtqnhx.x11ig0mb.xgmu6d7.x1quw8ve.xx0ingd"
+    ".xp5op4.x1y44fgy.xdzva22.xs8nzd4.x1fzehxr.xha3pab"
+)
+
+PASSWORD_INPUT_SELECTOR = USERNAME_INPUT_SELECTOR  # Same classes for both fields
+
+SUBMIT_BUTTON_SELECTOR = (
+    "div.xdj266r.xat24cr.xexx8yu.xyri2b.x18d9i69.x1c1uobl"
+    ".x6s0dn4.x78zum5.xl56j7k.x1e0frkt.xf0ucvx.xx2axb6"
+)
+
+MAX_POSTS = 10
+
+
+def get_credentials():
+    username = os.getenv("IG_USERNAME")
+    password = os.getenv("IG_PASSWORD")
+
+    if not username or not password:
+        raise ValueError("Missing IG_USERNAME or IG_PASSWORD in .env file")
+
+    print("Credentials loaded from .env successfully")
+    return username, password
+
+
+def click_if_exists(page, selectors, wait_after=1500):
+    for selector in selectors:
+        try:
+            locator = page.locator(selector)
+            if locator.count() > 0:
+                locator.first.click()
+                page.wait_for_timeout(wait_after)
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def login_instagram(page, username, password):
+    page.goto(LOGIN_URL, wait_until="domcontentloaded")
+    page.wait_for_timeout(4000)
+
+    # Dismiss cookie/consent banners if present
+    click_if_exists(
+        page,
+        [
+            "button:has-text('Allow all cookies')",
+            "button:has-text('Accept')",
+            "button:has-text('Only allow essential cookies')",
+        ],
+        wait_after=1500,
+    )
+
+    # Locate all inputs matching the shared class selector.
+    # Instagram renders username first, password second in DOM order.
+    input_locator = page.locator(USERNAME_INPUT_SELECTOR)
+
+    print(f"Found {input_locator.count()} input field(s) with target class")
+
+    username_input = input_locator.nth(0)  # First match → username
+    password_input = input_locator.nth(1)  # Second match → password
+
+    username_input.wait_for(timeout=15000)
+    password_input.wait_for(timeout=15000)
+
+    # Clear and fill both fields
+    username_input.fill("")
+    username_input.fill(username)
+    print("Username filled")
+
+    password_input.fill("")
+    password_input.fill(password)
+    print("Password filled")
+
+    # Small pause so Instagram's JS enables the button after both fields are filled
+    page.wait_for_timeout(1500)
+
+    submitted = False
+
+    # Strategy 1: JavaScript click on the span containing "Log in" text
+    # This bypasses pointer-event blocks on wrapper divs
+    try:
+        page.evaluate("""
+            const spans = document.querySelectorAll('span');
+            for (const span of spans) {
+                if (span.innerText.trim() === 'Log in') {
+                    span.click();
+                    break;
+                }
+            }
+        """)
+        print("Strategy 1: JS span click fired")
+        submitted = True
+    except Exception as e:
+        print(f"Strategy 1 failed: {e}")
+
+    # Strategy 2: JS click on button[type=submit]
+    if not submitted:
+        try:
+            page.evaluate("document.querySelector('button[type=submit]').click()")
+            print("Strategy 2: JS button[type=submit] click fired")
+            submitted = True
+        except Exception as e:
+            print(f"Strategy 2 failed: {e}")
+
+    # Strategy 3: Playwright force-click the outer role=none div (your full HTML)
+    if not submitted:
+        try:
+            btn = page.locator("div.xdj266r.xat24cr.xexx8yu.xyri2b.x18d9i69.x1c1uobl")
+            btn.first.click(force=True)
+            print("Strategy 3: force-click on wrapper div fired")
+            submitted = True
+        except Exception as e:
+            print(f"Strategy 3 failed: {e}")
+
+    # Strategy 4: Enter key on password field — always works
+    if not submitted:
+        print("Strategy 4: pressing Enter on password field")
+        password_input.press("Enter")
+
+    # Wait for navigation away from login page (up to 15s)
+    try:
+        page.wait_for_url(
+            lambda url: "accounts/login" not in url,
+            timeout=15000
+        )
+        print(f"Login successful — navigated to: {page.url}")
+    except Exception:
+        print(f"Warning: still on login page after submit. Current URL: {page.url}")
+        # Last resort — hit Enter anyway
+        password_input.press("Enter")
+        page.wait_for_timeout(7000)
+
+    page.wait_for_timeout(3000)
+
+    # Dismiss save-login / notification prompts
+    for _ in range(3):
+        click_if_exists(
+            page,
+            [
+                "button:has-text('Not Now')",
+                "div[role='button']:has-text('Not Now')",
+                "button:has-text('Save info')",
+            ],
+            wait_after=2000,
+        )
+
+
+def extract_comments(page):
+    comments = []
+
+    try:
+        page.wait_for_timeout(2500)
+        comment_locator = page.locator(COMMENT_SELECTOR)
+        count = comment_locator.count()
+
+        for i in range(count):
+            try:
+                text = comment_locator.nth(i).inner_text().strip()
+                if text:
+                    comments.append(text)
+            except Exception:
+                continue
+
+    except Exception as e:
+        print(f"Comment extraction error: {e}")
+
+    return comments
+
+
+def extract_likes(page):
+    try:
+        page.wait_for_timeout(2000)
+        like_locator = page.locator(LIKE_SELECTOR)
+
+        if like_locator.count() > 0:
+            return like_locator.first.inner_text().strip()
+
+    except Exception as e:
+        print(f"Like extraction error: {e}")
+
+    return "Not found"
+
+
+def scrape_posts(page):
+    scraped_data = []
+
+    page.goto(PROFILE_URL, wait_until="domcontentloaded")
+    page.wait_for_timeout(5000)
+
+    total_posts = page.locator(PHOTO_SELECTOR).count()
+    print(f"Found {total_posts} post image divs")
+
+    limit = min(MAX_POSTS, total_posts)
+
+    for i in range(limit):
+        try:
+            print(f"Opening post {i + 1}")
+
+            page.wait_for_selector(PHOTO_SELECTOR, timeout=10000)
+            photo_locator = page.locator(PHOTO_SELECTOR)
+
+            current_count = photo_locator.count()
+            if i >= current_count:
+                print(f"Post index {i} not available anymore.")
+                break
+
+            post_box = photo_locator.nth(i)
+            post_box.scroll_into_view_if_needed()
+            page.wait_for_timeout(1200)
+
+            try:
+                post_box.locator("xpath=ancestor::a[1]").click()
+            except Exception:
+                post_box.click(force=True)
+
+            page.wait_for_timeout(4000)
+
+            post_url = page.url
+            likes = extract_likes(page)
+            comments = extract_comments(page)
+
+            scraped_data.append(
+                {
+                    "post_number": i + 1,
+                    "post_url": post_url,
+                    "likes": likes,
+                    "comment_count": len(comments),
+                    "comments": comments,
+                }
+            )
+
+            page.go_back()
+            page.wait_for_timeout(4000)
+
+        except Exception as e:
+            print(f"Error on post {i + 1}: {e}")
+            try:
+                page.go_back()
+                page.wait_for_timeout(3000)
+            except Exception:
+                pass
+
+    return scraped_data
+
+
+def main():
+    username, password = get_credentials()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False, slow_mo=500)
+        context = browser.new_context()
+        page = context.new_page()
+
+        try:
+            login_instagram(page, username, password)
+            data = scrape_posts(page)
+
+            with open("instagram_scraped_data.json", "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+
+            print("Done. Saved to instagram_scraped_data.json")
+
+        except PlaywrightTimeoutError:
+            print("Timeout occurred.")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+        finally:
+            context.close()
+            browser.close()
+
+
+if __name__ == "__main__":
+    main()
