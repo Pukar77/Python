@@ -4,9 +4,9 @@ python -m venv env_name
 For eg: python -m venv pukar
 
 Step-2
-env_name/Scripts/activate
+env_name\Scripts\activate
 
-Foe eg: pukar/Scripts/activate
+Foe eg: pukar\Scripts\activate
 
 Step-3
 Pip install requirements.txt
