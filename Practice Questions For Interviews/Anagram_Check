@@ -1,0 +1,12 @@
+
+
+str1 = 'hey'
+
+str2='eyh'
+
+if sorted(str1) == sorted(str2):
+    print("The above strings are anagram")
+    
+else:
+    print("The above string is not anagram")
+        
