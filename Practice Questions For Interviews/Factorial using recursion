@@ -1,0 +1,12 @@
+
+def fact(num):
+    if num ==0 or num == 1:
+        return 1
+    else:
+        return num * fact(num-1)
+        
+user_input = int(input("Enter the number\n"))
+
+factorial = fact(user_input)
+
+print("Answer is ", factorial)
