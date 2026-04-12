@@ -1,0 +1,13 @@
+def fib(num):
+    if num == 0:
+        return 0
+    elif num == 1:
+        return 1
+    else:
+        return fib(num-1)+fib(num-2)
+    
+user_input = int(input("Enter the number\n"))
+
+answer = fib(user_input)
+
+print("Fibonaci is ", answer)
