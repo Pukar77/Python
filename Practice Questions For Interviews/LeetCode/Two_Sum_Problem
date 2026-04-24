@@ -1,0 +1,19 @@
+class Solution(object):
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        num_map={}
+
+        for i in range(len(nums)):
+            compliments = target - nums[i]
+        
+            if compliments in num_map:
+                return [num_map[compliments],i]
+
+            num_map[nums[i]] = i
+
+ 
+        
