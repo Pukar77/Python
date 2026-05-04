@@ -1,13 +1,27 @@
-rag_app/
-├── data/                  # Raw documents (PDFs, TXT, MD, etc.)
-├── vectorstore/           # Persisted vector database (e.g., Chroma)
-├── src/
-│   ├── __init__.py
-│   ├── config.py          # Configuration (API keys, paths, model names)
-│   ├── ingestion.py       # Document loading, splitting, embedding & indexing
-│   ├── retrieval.py       # Retriever setup and query logic
-│   └── rag_chain.py       # Full RAG pipeline (retrieval + LLM generation)
-├── app.py                 # Main entry point (CLI, Streamlit, or FastAPI)
+├── Backend/
+│   ├── Rag/
+│   │   ├── ecommerce_products_rag.pdf          # Product catalog (source of truth)
+│   │   ├── document_loader_text_splitter_01.py # Load & chunk the PDF
+│   │   ├── vector_store_02.py                  # Embed chunks → store in Qdrant
+│   │   ├── retriver_03.py                      # Similarity search from Qdrant
+│   │   ├── rag_chain_04.py                     # RAG chain with Groq LLM
+│   │   ├── main_05.py                          # Unified entry point (RAG + Agent)
+│   │   └── .env                                # GROQ_API_KEY
+│   │
+│   └── Agent/
+│       ├── agent.py                            # Full LangChain AgentExecutor
+│       ├── main.py                             # Entry point for agent version
+│       ├── tools/
+│       │   └── database_tools.py               # check_stock & buy_product tools
+│       └── db/
+│           ├── connection.py                   # Supabase client
+│           ├── seed.py                         # One-time DB seeder (50 products)
+│           └── .env                            # SUPABASE_URL & SUPABASE_KEY
+│
+├── Frontend/
+│   └── app.py                                  # Streamlit chat UI
+│
+├── qdrant_storage/                             # Local Qdrant data (auto-generated)
 ├── requirements.txt
-├── .env                   # Environment variables (not committed)
+├── .gitignore
 └── README.md
