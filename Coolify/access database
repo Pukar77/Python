@@ -1,0 +1,5 @@
+#Access the database through it, It is first step of accessing the database
+psql -U postgres -d postgres
+
+#see list of all the table present in the database
+psql -U postgres -d postgres
