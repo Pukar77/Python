@@ -1,18 +1,16 @@
-def extract_text_with_ocr(file_path: Path) -> str:
-    print("⚠ No selectable text found. Running OCR...")
+from PIL import Image
+import pytesseract
+import platform
+import os
 
-  #This poopler_path we need to install
-    poppler_path = r"C:\Release-25.12.0-0\poppler-25.12.0\Library\bin"
-  
-    images = pdf2image.convert_from_path(file_path, poppler_path=poppler_path)
-    text = ""
+if platform.system() == "Windows":
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+else:
+    tesseract_cmd = os.getenv("TESSERACT_CMD", "/usr/bin/tesseract")
+    pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
-    for img in images:
-        text += pytesseract.image_to_string(img)
-    
-    print("OCR function")    
-    text = text.strip()
-    with open("ocr.txt", "w", encoding="utf-8") as f:
-        f.write(text)
+img = Image.open('ocr_text_image.png')
 
-    return text
+text = pytesseract.image_to_string(img)
+
+print(text)
