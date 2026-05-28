@@ -1,0 +1,103 @@
+from dotenv import load_dotenv
+import os
+import json
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from openai import OpenAI
+from fastapi.responses import JSONResponse
+
+
+
+class UserInput(BaseModel):
+    subtitle: str
+    category: str
+
+
+
+def generate(text: UserInput):
+    try:
+        subtitle = text.subtitle.strip()
+        category = text.category.strip()
+        if not subtitle or not category:
+            raise ValueError("Subtitle Or Category is missing")
+
+        prompt = f"""
+    
+
+
+       """
+        response = client.responses.create(
+            model="gpt-4o",
+            input=prompt,
+        )
+
+        if not response or not response.output_text:
+            raise RuntimeError("Empty response from Gemini")
+
+        llm_text = response.output_text.strip()
+        if llm_text.startswith("```"):
+            llm_text = llm_text.split("```", 2)[1]  # Remove opening fence
+        if llm_text.lower().startswith("json"):
+            llm_text = llm_text[4:]             # Remove optional "json" label
+        if llm_text.endswith("```"):
+            llm_text = llm_text[:-3]            # Remove closing fence
+        llm_text = llm_text.strip()
+
+        try:
+            parsed_output = json.loads(llm_text)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Invalid JSON returned by LLM: {llm_text}"
+            ) from e
+
+        return {
+            "response": parsed_output
+        }
+
+    except ValueError as ve:
+        # Client-side or validation errors
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status" :0,
+                "message": "Validation failed. Please check your input",
+                "errors":{
+                    "title":[str(ve)]
+                }
+                }  
+        )
+
+    except Exception as e: 
+        # Catch EVERYTHING else so server never crashes
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status":0,
+                "message":"Internal Server error",
+                "errors":{
+                    "title":[str(e)]
+                }
+            }
+          
+        )
+
+
+#HERE IF USER INPUT AS 
+{
+    "subtitle":" ",
+    "category":"Technique"
+} 
+
+  WITH MISSING SUBTITLE, THEN THIS CUSTOM ERROR WILL BE SHOWN
+{
+    "status": 0,
+    "message": "Validation failed. Please check your input",
+    "errors": {
+        "title": [
+            "Subtitle Or Category is missing"
+        ]
+    }
+}
+
+INSTEAD OF JUST THIS ERROR RESPONSE
+"Subtitle Or Category is missing"
