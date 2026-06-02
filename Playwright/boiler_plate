@@ -1,0 +1,21 @@
+from playwright.sync_api import sync_playwright
+
+def url_rendring(page):
+    page.goto("https://digitale-sammlungen.de/en/search?query=&startPage=1&pageSize=100")
+
+
+def main():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False, slow_mo=500)
+        context = browser.new_context()
+        page = context.new_page()
+
+        try:
+            url_rendring(page)
+
+        except Exception as e:
+            print("Some exception occured ", e)
+
+if __name__ == "__main__":
+    main()
+        
