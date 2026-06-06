@@ -1,0 +1,61 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Todo(BaseModel):
+    id:int
+    name:str
+    description:str
+
+todos=[]
+
+@app.get("/")
+def show_todo():
+    return todos
+
+@app.post("/")
+def add_todo(user_input:Todo):
+    todos.append(user_input)
+    return {
+        "status":"success",
+        "message":"Todos created succesfully"
+    }
+
+#update particular section
+@app.put("/{todo_id}")
+def update_one(todo_id:int, updated_todo:Todo):
+    for i , todo in enumerate(todos):
+        if todo.id == todo_id:
+            todos[i] = updated_todo
+            return {
+                "status":"success",
+                "message":"your todo have been updated"
+            }
+        else:
+            return{
+                "status":"False",
+                "message":"your todo have not been updated as the id is not in todos"
+            }
+    return{
+        "status":"success",
+        "message":"Updated successfully"
+    }
+
+@app.delete("/{todo_id}")
+def delete_todo(todo_id:int):
+    for i , todo in enumerate(todos):
+        if todo.id == todo_id:
+            del todos[i]
+
+            return{
+                "status":"Success",
+                "message":"Todo have been deleted successfully"
+            }
+
+        else:
+            return{
+                "status":"Failed",
+                "message":"Provided id is not in the list"
+            } 
+        
