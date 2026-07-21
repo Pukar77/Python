@@ -1,0 +1,8 @@
+Find the commit history
+1) git log --oneline --all
+
+Create a new branch from that commit (recommended)
+
+Once you've confirmed it's the correct commit:
+
+2) checkout -b rollback-from-good a1b2c3d
