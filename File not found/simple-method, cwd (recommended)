@@ -1,0 +1,13 @@
+from pathlib import Path
+
+dir = Path.cwd().parent 
+
+#here cwd means current working directory, so for example
+
+if Main-folder
+      - subfolder
+           -main.py
+
+
+so if we do this dir = Path.cwd().parent , then we can access the content of main-folder as Path.cwd() leads us to sunfolder and its parent  leads us to main-folder
+        
