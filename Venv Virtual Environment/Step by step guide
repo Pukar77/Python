@@ -10,3 +10,10 @@ Foe eg: pukar\Scripts\activate
 
 Step-3
 Pip install requirements.txt
+
+
+
+
+
+//inorder to create a env file with specific python version
+py -3.10 -m venv env_name
